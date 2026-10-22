@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Video Rebrander · Remove an old logo, add a new one</title>
+  <meta name="description" content="Remove an old logo and add a new one in hundreds of videos at once. Runs in your browser. Nothing is uploaded.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='6' width='28' height='20' rx='5' fill='%23192c2c'/%3E%3Cpath d='M13 11.5v9l7.5-4.5z' fill='%23d7ef86'/%3E%3Crect x='20' y='18' width='8' height='6' rx='2' fill='%23d7ef86'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#stageCard">Skip to the preview</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="6" width="28" height="20" rx="5" fill="#192c2c"/><path d="M13 11.5v9l7.5-4.5z" fill="#d7ef86"/><rect x="20" y="18" width="8" height="6" rx="2" fill="#d7ef86"/></svg>
+        <span class="brand-name">Video Rebrander</span>
+        <span class="brand-version">v1.0</span>
+      </div>
+      <div class="topbar-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <span>Runs on this computer · Nothing is uploaded</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner banner-warn" id="unsupported" role="alert" hidden></div>
+
+  <div class="layout" id="layout">
+    <!-- 01 · Videos -->
+    <aside class="col-left">
+      <section class="card source-card" aria-labelledby="srcTitle">
+        <div class="step"><span class="step-num">01</span> Choose videos</div>
+
+        <div class="src-empty" id="srcEmpty">
+          <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2.2h8.4A1.5 1.5 0 0 1 21 8.7v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/><path d="M10 11.2v5l4-2.5z" fill="currentColor" stroke="none"/></svg>
+          <h2 class="src-title" id="srcTitle">No videos yet</h2>
+          <p class="muted small">Pick a folder of videos. They’re read on this computer and never uploaded.</p>
+          <button type="button" class="btn btn-lime btn-block" data-action="pick-folder" id="pickBtn">Choose folder</button>
+          <button type="button" class="btn btn-outline btn-block" data-action="pick-files" id="filesBtn" hidden>Add videos</button>
+          <button type="button" class="btn btn-outline btn-block" data-action="sample" id="sampleBtn">Try a sample video</button>
+          <label class="check"><input type="checkbox" id="optSub" checked> Include subfolders</label>
+        </div>
+
+        <div class="src-loaded" id="srcLoaded" hidden>
+          <div class="src-head">
+            <div class="src-head-text">
+              <h2 class="src-name" id="srcName"></h2>
+              <p class="src-meta" id="srcMeta"></p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" data-action="change-source" id="changeBtn">Change</button>
+          </div>
+          <div class="src-progress" id="srcProgress" hidden>
+            <div class="bar"><span id="srcBar"></span></div>
+            <p class="small muted" id="srcProgressText"></p>
+          </div>
+          <ul class="vlist" id="vlist" aria-label="Videos"></ul>
+          <p class="src-note" id="srcNote" hidden></p>
+        </div>
+      </section>
+      <p class="privacy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg>
+        <span><strong>Your videos stay here.</strong> Everything happens in this browser tab. Your original videos are never changed. New copies are saved next to them.</span>
+      </p>
+    </aside>
+
+    <!-- Preview -->
+    <main class="col-main" id="stageCard" tabindex="-1">
+      <section class="card stage-card" aria-label="Preview">
+        <div class="stage-head">
+          <div class="stage-title">
+            <span class="stage-name" id="stageName">Preview</span>
+            <span class="stage-meta" id="stageMeta"></span>
+          </div>
+          <div class="seg" role="group" aria-label="Show">
+            <button type="button" class="seg-btn is-on" data-action="view" data-view="result" aria-pressed="true">Result</button>
+            <button type="button" class="seg-btn" data-action="view" data-view="original" aria-pressed="false">Original</button>
+          </div>
+        </div>
+        <div class="stage-wrap" id="stageWrap">
+          <div class="stage" id="stage" hidden>
+            <canvas id="view" aria-label="Video preview"></canvas>
+            <div class="layer" id="layer"></div>
+          </div>
+          <div class="stage-empty" id="stageEmpty">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="10" width="38" height="28" rx="6" stroke="currentColor" stroke-width="2"/><path d="M21 18.5v11l9-5.5z" fill="currentColor"/><rect x="30" y="29" width="9" height="5" rx="1.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 2"/></svg>
+            <p class="stage-empty-title">Your preview appears here</p>
+            <p class="small">Choose a folder of videos, or try the sample video first.</p>
+          </div>
+          <div class="stage-busy" id="stageBusy" hidden><span class="spinner" aria-hidden="true"></span><span class="sr-only">Loading</span></div>
+        </div>
+        <div class="scrub" id="scrub" hidden>
+          <span class="tc" id="tcNow">0:00</span>
+          <input type="range" id="scrubRange" min="0" max="1000" step="1" value="100" aria-label="Preview time">
+          <span class="tc" id="tcDur">0:00</span>
+        </div>
+        <p class="stage-hint" id="stageHint" hidden></p>
+        <div class="shape-note" id="shapeNote" hidden></div>
+      </section>
+    </main>
+
+    <!-- Settings -->
+    <aside class="col-right">
+      <section class="card panel" id="removePanel" aria-labelledby="removeTitle">
+        <div class="step" id="removeTitle"><span class="step-num">02</span> Remove old logo</div>
+        <p class="panel-empty" id="boxEmpty">Drag on the preview to draw a box over the old logo. Make the box a little bigger than the logo.</p>
+        <ul class="boxes" id="boxList" aria-label="Boxes"></ul>
+        <p class="method-help" id="methodHelp" hidden></p>
+        <div class="panel-actions" id="boxActions" hidden>
+          <button type="button" class="btn btn-outline btn-sm" data-action="add-box">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add box</button>
+          <button type="button" class="btn btn-text btn-sm" data-action="clear-boxes">Remove all</button>
+        </div>
+      </section>
+
+      <section class="card panel" id="addPanel" aria-labelledby="addTitle">
+        <div class="step" id="addTitle"><span class="step-num">03</span> Add new logo</div>
+        <div class="seg seg-full" role="group" aria-label="New logo">
+          <button type="button" class="seg-btn is-on" data-action="ov-kind" data-kind="none" aria-pressed="true">None</button>
+          <button type="button" class="seg-btn" data-action="ov-kind" data-kind="image" aria-pressed="false">Image</button>
+          <button type="button" class="seg-btn" data-action="ov-kind" data-kind="text" aria-pressed="false">Text</button>
+        </div>
+        <div class="ov-image" id="ovImage" hidden>
+          <div class="logo-file" id="logoFile" hidden></div>
+          <button type="button" class="btn btn-outline btn-block" data-action="pick-logo" id="pickLogoBtn">Choose logo image</button>
+          <p class="hint">A PNG with a transparent background works best.</p>
+        </div>
+        <div class="ov-text" id="ovText" hidden>
+          <label class="field"><span class="field-label">Text</span><input type="text" class="input" id="txtValue" maxlength="80" placeholder="Your brand"></label>
+          <div class="field-row">
+            <label class="field grow"><span class="field-label">Font</span>
+              <select class="input" id="txtFont">
+                <option value="sans">Sans</option>
+                <option value="serif">Serif</option>
+                <option value="display">Bold display</option>
+                <option value="mono">Mono</option>
+              </select>
+            </label>
+            <label class="field"><span class="field-label">Color</span><input type="color" class="color" id="txtColor" value="#ffffff"></label>
+          </div>
+          <label class="check"><input type="checkbox" id="txtShadow" checked> Soft shadow</label>
+        </div>
+        <div class="ov-place" id="ovPlace" hidden>
+          <div class="field-label">Position</div>
+          <div class="place-row">
+            <div class="anchor-grid" role="group" aria-label="Position">
+              <button type="button" data-action="anchor" data-anchor="tl" aria-label="Top left"></button>
+              <button type="button" data-action="anchor" data-anchor="t" aria-label="Top"></button>
+              <button type="button" data-action="anchor" data-anchor="tr" aria-label="Top right"></button>
+              <button type="button" data-action="anchor" data-anchor="l" aria-label="Left"></button>
+              <button type="button" data-action="anchor" data-anchor="c" aria-label="Center"></button>
+              <button type="button" data-action="anchor" data-anchor="r" aria-label="Right"></button>
+              <button type="button" data-action="anchor" data-anchor="bl" aria-label="Bottom left"></button>
+              <button type="button" data-action="anchor" data-anchor="b" aria-label="Bottom"></button>
+              <button type="button" data-action="anchor" data-anchor="br" aria-label="Bottom right"></button>
+            </div>
+            <div class="place-side">
+              <button type="button" class="btn btn-outline btn-sm btn-block" data-action="anchor" data-anchor="box" id="anchorBoxBtn">Where the old logo was</button>
+              <p class="hint">Or drag the new logo on the preview.</p>
+            </div>
+          </div>
+          <label class="slider"><span>Size</span><input type="range" id="ovSize" min="2" max="90" step="1" value="18"><output id="ovSizeOut">18%</output></label>
+          <label class="slider"><span>Opacity</span><input type="range" id="ovOpacity" min="10" max="100" step="1" value="100"><output id="ovOpacityOut">100%</output></label>
+          <label class="slider"><span>Margin</span><input type="range" id="ovMargin" min="0" max="20" step="1" value="4"><output id="ovMarginOut">4%</output></label>
+        </div>
+      </section>
+
+      <section class="card panel" id="savePanel" aria-labelledby="saveTitle">
+        <div class="step" id="saveTitle"><span class="step-num">04</span> Save new copies</div>
+        <div class="field">
+          <span class="field-label">Save to</span>
+          <div class="out-target" id="outTarget">A new “Rebranded” folder inside your folder</div>
+          <div class="out-actions">
+            <button type="button" class="btn btn-outline btn-sm" data-action="pick-output" id="pickOutBtn">Choose another folder</button>
+            <button type="button" class="btn btn-text btn-sm" data-action="reset-output" id="resetOutBtn" hidden>Use “Rebranded”</button>
+          </div>
+        </div>
+        <label class="field"><span class="field-label">Quality</span>
+          <select class="input" id="optQuality">
+            <option value="original">Same as original (recommended)</option>
+            <option value="smaller">Smaller files</option>
+            <option value="best">Best quality (bigger files)</option>
+          </select>
+        </label>
+        <label class="field" id="existingField"><span class="field-label">If a new copy already exists</span>
+          <select class="input" id="optExisting">
+            <option value="skip">Skip it (lets you resume)</option>
+            <option value="replace">Replace it</option>
+          </select>
+        </label>
+        <label class="check rights" id="rightsField"><input type="checkbox" id="optRights"> <span>I own these videos or have permission to edit them.</span></label>
+        <button type="button" class="btn btn-dark btn-block btn-lg" data-action="start" id="startBtn" disabled>Start</button>
+        <p class="hint center" id="startHint">Saves MP4 copies. Your original videos are never changed.</p>
+      </section>
+    </aside>
+  </div>
+
+  <dialog class="dialog" id="runDialog" aria-labelledby="runTitle"></dialog>
+
+  <input type="file" id="fileInput" accept="video/*,.mp4,.m4v,.mov,.webm,.mkv" multiple hidden>
+  <input type="file" id="logoInput" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif,image/avif" hidden>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript><p class="banner banner-warn">Video Rebrander needs JavaScript to run.</p></noscript>
+  <script src="lib/mediabunny.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

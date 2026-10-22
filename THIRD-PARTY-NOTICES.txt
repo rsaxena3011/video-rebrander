@@ -1,0 +1,17 @@
+Third-party software used in Video Rebrander
+=============================================
+
+Mediabunny 1.62.0
+-----------------
+Used to read and write video files (MP4, MOV, WebM, MKV) in the browser.
+Project and source code: https://github.com/Vanilagy/mediabunny
+Package: https://www.npmjs.com/package/mediabunny
+Copyright (c) Vanilagy and Mediabunny contributors.
+License: Mozilla Public License, version 2.0 (MPL-2.0).
+
+The full license text is in VideoRebrander/lib/MEDIABUNNY-LICENSE.txt and at
+https://mozilla.org/MPL/2.0/
+
+VideoRebrander/lib/mediabunny.min.js contains the parts of Mediabunny 1.62.0
+that Video Rebrander uses, bundled and minified with esbuild. The Mediabunny
+code wasn't changed. Its source code is available at the links above.
